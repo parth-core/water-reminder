@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071a2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hydro Habit">
+<meta name="description" content="A simple, private water habit tracker that works offline.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>Hydro Habit</title>
+<style>
+:root{--bg:#06121f;--ink:#f2f9ff;--muted:rgba(222,238,250,.58);--g1:rgba(255,255,255,.17);--g2:rgba(255,255,255,.05);--brd:rgba(255,255,255,.2);--hi:rgba(255,255,255,.42);--sh:rgba(0,0,0,.35);--field:rgba(255,255,255,.08);--accent:#5fd0ff;--accent2:#2b8cff;--o1:#1c7bff;--o2:#18d4c4;--o3:#7a5cff;--btn-ink:#04223a}
+@media(prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#dcefff;--ink:#0b2236;--muted:rgba(11,34,54,.55);--g1:rgba(255,255,255,.7);--g2:rgba(255,255,255,.3);--brd:rgba(255,255,255,.85);--hi:#fff;--sh:rgba(40,100,160,.18);--field:rgba(255,255,255,.5);--accent:#0a84e6;--accent2:#0a5fd0;--o1:#7cc4ff;--o2:#9ff0e4;--o3:#c7b8ff;--btn-ink:#fff}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{height:100%;background:var(--bg);color-scheme:light dark}
+body{margin:0;min-height:100%;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) 18px env(safe-area-inset-bottom);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--bg)}
+.bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.75;animation:drift 22s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:60vmax;height:60vmax;background:var(--o1);top:-20vmax;left:-15vmax}
+.bg i:nth-child(2){width:50vmax;height:50vmax;background:var(--o2);bottom:-18vmax;right:-14vmax;animation-delay:-8s;opacity:.55}
+.bg i:nth-child(3){width:36vmax;height:36vmax;background:var(--o3);top:38%;left:45%;animation-delay:-14s;opacity:.45}
+@keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.15)}}
+.glass{position:relative;background:linear-gradient(150deg,var(--g1),var(--g2));-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--brd);box-shadow:inset 0 1px 0 var(--hi),inset 0 -1px 0 rgba(255,255,255,.06),0 24px 60px var(--sh)}
+.app{max-width:440px;margin:0 auto;padding:14px 0 44px}
+.top{display:flex;justify-content:space-between;align-items:center;height:48px}
+.date{font-size:15px;font-weight:600;letter-spacing:.2px}.date span{color:var(--muted);font-weight:500;margin-left:8px}
+.icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--brd)}
+.icon-btn svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+.hero{display:flex;flex-direction:column;align-items:center;margin:26px 0 22px}
+.orb{position:relative;width:min(300px,78vw);aspect-ratio:1;border-radius:50%;overflow:hidden;isolation:isolate;background:linear-gradient(160deg,var(--g1),var(--g2));border:1px solid var(--brd);box-shadow:inset 0 2px 1px var(--hi),inset 0 -22px 40px rgba(255,255,255,.07),0 40px 80px var(--sh),0 0 90px rgba(95,208,255,.18)}
+.orb:before{content:"";position:absolute;inset:6% 14% auto 14%;height:38%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));z-index:3;pointer-events:none;opacity:.55;transform:translate(calc(var(--tx,0)*16px),calc(var(--ty,0)*10px));transition:transform .4s ease-out}
+.liquid{position:absolute;left:-20%;bottom:0;width:140%;height:0;z-index:0;transform:rotate(calc(var(--tx,0)*-3deg));transform-origin:50% 100%;background:linear-gradient(180deg,rgba(95,208,255,.9),rgba(43,140,255,.85));transition:height 1s cubic-bezier(.2,.8,.2,1),transform .6s ease-out}
+.liquid:before,.liquid:after{content:"";position:absolute;left:-50%;width:200%;height:30px;top:-15px;border-radius:44%;background:rgba(190,235,255,.55);animation:wave 7s linear infinite}
+.liquid:after{top:-10px;background:rgba(95,208,255,.6);animation-duration:11s;animation-direction:reverse}
+@keyframes wave{to{transform:translateX(25%) rotate(360deg)}}
+.read{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-shadow:0 2px 18px rgba(0,30,60,.35)}
+.amount{font-size:68px;font-weight:200;letter-spacing:-3px;line-height:1;font-variant-numeric:tabular-nums}
+.unit{font-size:14px;letter-spacing:3px;margin-top:6px;opacity:.8}
+.read .pct{font-size:13px;margin-top:14px;font-weight:600;padding:5px 12px;border-radius:20px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25)}
+.meta{margin-top:22px;text-align:center}
+.remaining{font-size:17px;font-weight:500}.goal{font-size:13px;color:var(--muted);margin-top:4px}
+.pulse{animation:pulse .3s ease}@keyframes pulse{40%{transform:scale(1.03)}}
+
+.panel{border-radius:30px;padding:20px}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.chips button{border:1px solid var(--brd);background:var(--field);border-radius:16px;padding:13px 0;font-size:15px;font-weight:600;transition:.2s}
+.chips button.on{background:linear-gradient(160deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 8px 22px rgba(43,140,255,.45),inset 0 1px 0 rgba(255,255,255,.5)}
+.slider-line{display:flex;justify-content:space-between;align-items:baseline;margin:22px 2px 6px}
+.slider-line .l{font-size:13px;color:var(--muted)}.slider-line strong{font-size:28px;font-weight:300;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:32px;background:transparent;margin:0;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:var(--field);border:1px solid var(--brd)}
+input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:var(--field);border:1px solid var(--brd)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-12px;border-radius:50%;background:#fff;border:0;box-shadow:0 4px 14px rgba(0,0,0,.3),0 0 0 6px rgba(95,208,255,.25)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#fff;border:0;box-shadow:0 4px 14px rgba(0,0,0,.3),0 0 0 6px rgba(95,208,255,.25)}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.actions{display:flex;gap:10px;margin-top:20px}
+.primary{flex:1;height:58px;border:0;border-radius:20px;font-weight:650;font-size:17px;color:#fff;background:linear-gradient(160deg,var(--accent),var(--accent2));box-shadow:0 14px 30px rgba(43,140,255,.45),inset 0 1px 0 rgba(255,255,255,.55);transition:transform .12s}
+.primary:active{transform:scale(.975)}
+.secondary{width:58px;height:58px;border-radius:20px;display:grid;place-items:center;border:1px solid var(--brd);background:var(--field)}
+.secondary svg{width:21px;height:21px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.report{display:none;border-radius:18px;padding:14px;margin-top:16px;font-size:14px;line-height:1.55;background:var(--field);border:1px solid var(--brd)}
+.report.show{display:block}
+.report button{margin-top:8px;border:0;background:var(--accent);color:#fff;border-radius:12px;padding:9px 14px;font-weight:650}
+
+.section{margin-top:22px;border-radius:28px;padding:18px 18px 8px}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.sec-head h2{font-size:16px;margin:0;font-weight:600}.sec-head span{font-size:13px;color:var(--muted)}
+.log-row{display:flex;align-items:center;gap:12px;padding:13px 0;font-size:15px;border-top:1px solid var(--brd)}
+.log-row i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);flex:none}
+.log-row span{color:var(--muted);font-size:14px}.log-row strong{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+.empty{font-size:14px;color:var(--muted);padding:12px 0 14px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0}
+.day{text-align:center;padding:10px 0 12px;border-radius:16px;background:var(--field);border:1px solid transparent}
+.day small{display:block;font-size:11px;color:var(--muted)}.day b{display:block;font-size:12px;font-weight:600;margin:5px 0 7px;font-variant-numeric:tabular-nums}
+.day .dot{width:8px;height:8px;border-radius:50%;background:var(--brd);margin:0 auto}
+.day.done{border-color:var(--brd)}.day.done .dot{background:var(--accent);box-shadow:0 0 12px var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:6px 0 12px}
+.stat b{display:block;font-size:26px;font-weight:300;letter-spacing:-1px;font-variant-numeric:tabular-nums}.stat span{font-size:12px;color:var(--muted)}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:30px}
+
+.scrim{position:fixed;inset:0;background:rgba(2,10,20,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:20}
+.scrim.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:460px;margin:0 auto;border-radius:34px;padding:10px 22px 24px;transform:translateY(115%);transition:transform .4s cubic-bezier(.2,.9,.2,1);z-index:21;max-height:86vh;overflow-y:auto;background:linear-gradient(150deg,var(--g1),var(--g2)),var(--bg)}
+.sheet.show{transform:none}
+.grab{width:40px;height:5px;border-radius:5px;background:var(--brd);margin:0 auto 14px}
+.sheet h2{font-size:20px;font-weight:600;margin:0 0 4px}
+.setting-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--brd);font-size:15px}
+.setting-row input{width:120px;border:1px solid var(--brd);border-radius:14px;padding:10px 12px;background:var(--field);font-size:15px}
+.setting-row input.wide{width:58%}
+.setting-row button{border:1px solid var(--brd);background:var(--field);padding:10px 16px;border-radius:14px;font-weight:650;font-size:14px}
+.notice{font-size:13px;color:var(--muted);line-height:1.55;margin-top:12px}
+details.tip summary{font-size:13px;color:var(--accent);padding:12px 0 0;cursor:pointer;list-style:none}details.tip summary::-webkit-details-marker{display:none}
+.toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,24px);opacity:0;pointer-events:none;padding:12px 20px;border-radius:30px;font-size:14px;transition:.3s;z-index:30;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.orb:after{content:"";position:absolute;inset:0;border-radius:50%;padding:2px;z-index:4;pointer-events:none;background:conic-gradient(transparent 0 15%,rgba(95,208,255,.95),rgba(122,92,255,.85),rgba(24,212,196,.9),transparent 75%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.orb{transition:box-shadow 1s}.orb.full{box-shadow:inset 0 2px 1px var(--hi),inset 0 -22px 40px rgba(255,255,255,.1),0 40px 80px var(--sh),0 0 130px rgba(95,208,255,.55)}
+.orb i{position:absolute;z-index:1;pointer-events:none}
+.drop{left:50%;top:-8%;width:12px;height:17px;margin-left:-6px;border-radius:50% 50% 50% 50%/65% 65% 35% 35%;background:linear-gradient(#e8f8ff,#8fdcff);animation:fall .45s cubic-bezier(.5,0,1,.7) forwards}
+@keyframes fall{to{top:52%;opacity:0}}
+.rip{left:50%;top:50%;width:22%;aspect-ratio:1;border:1.5px solid rgba(255,255,255,.8);border-radius:50%;transform:translate(-50%,-50%) scale(.2);animation:rip 1s ease-out forwards}
+@keyframes rip{to{transform:translate(-50%,-50%) scale(5.5);opacity:0}}
+.bub{bottom:0;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.95),rgba(255,255,255,.12));animation:rise var(--t) ease-in forwards}
+@keyframes rise{to{transform:translate(var(--x),var(--y));opacity:0}}
+.glass:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(240px circle at var(--mx,50%) var(--my,0),rgba(255,255,255,.2),transparent 65%);opacity:0;transition:opacity .35s}
+.glass:hover:before{opacity:1}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<main class="app">
+<header class="top">
+ <div class="date"><span id="today" style="margin:0;color:inherit;font-weight:600">Today</span><span id="weekday"></span></div>
+ <button class="icon-btn glass" id="openSettings" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>
+</header>
+
+<section class="hero" aria-label="Today's progress">
+ <div class="orb" id="ring"><div class="liquid" id="waveFill"></div>
+  <div class="read"><div class="amount" id="total">0</div><div class="unit">ML</div><div class="pct" id="percent">0%</div></div></div>
+ <div class="meta"><div class="remaining" id="remaining"></div><div class="goal" id="goalPill"></div></div>
+</section>
+
+<section class="panel glass">
+ <div class="chips" id="chips"><button data-amount="150">150</button><button data-amount="250">250</button><button data-amount="500">500</button><button data-amount="750">750</button></div>
+ <div class="slider-line"><span class="l">Amount</span><strong><span id="sliderValue">250</span> ml</strong></div>
+ <input id="slider" type="range" min="50" max="1000" step="50" value="250" aria-label="Water amount">
+ <div class="scale"><span>50</span><span>500</span><span>1,000</span></div>
+ <div class="actions"><button class="primary" id="add">Add water</button><button class="secondary" id="undo" aria-label="Undo last entry"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button></div>
+ <div class="report" id="dailyReport"></div>
+</section>
+
+<section class="section glass">
+ <div class="sec-head"><h2>Today</h2><span id="entriesCount">0 entries</span></div>
+ <div id="logList"><div class="empty">Nothing logged yet.</div></div>
+</section>
+
+<section class="section glass">
+ <div class="sec-head"><h2>This week</h2><span></span></div>
+ <div class="week" id="week"></div>
+ <div class="stats"><div class="stat"><b id="streak">0</b><span>Day streak</span></div><div class="stat"><b id="weeklyAvg">0</b><span>Avg ml</span></div><div class="stat"><b id="goalDays">0/7</b><span>Goals hit</span></div></div>
+</section>
+
+<div class="footer">Private · Stored on this device · Works offline</div>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="sheet glass" id="sheet" aria-label="Settings" aria-hidden="true">
+ <div class="grab"></div>
+ <h2>Settings</h2>
+ <div class="setting-row"><label for="goalInput">Daily target (ml)</label><input id="goalInput" type="number" min="500" max="10000" step="250" value="4000"></div>
+ <div class="setting-row"><label for="reminderTime">Check-in time</label><input id="reminderTime" type="time" value="21:00"></div>
+ <div class="setting-row"><span>Notifications</span><button id="notify">Enable</button></div>
+ <div class="setting-row"><label for="syncUrl">Apps Script URL</label><input class="wide" id="syncUrl" type="url" placeholder="https://script.google.com/macros/s/..."></div>
+ <div class="setting-row"><label for="syncToken">Sync token</label><input class="wide" id="syncToken" type="password" placeholder="Private token"></div>
+ <div class="setting-row"><span>Google sync</span><button id="saveSync">Save &amp; sync</button></div>
+ <div class="notice" id="syncStatus">Optional. Add your Apps Script URL and token to sync.</div>
+ <details class="tip"><summary>iPhone reminder tip</summary><div class="notice" style="margin-top:6px">In Shortcuts, create a daily Personal Automation at your check-in time with a “Show Notification” action: “Open Hydro Habit and review today’s water total.”</div></details>
+</aside>
+<div class="toast glass" id="toast"></div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id), KEY='hydroHabitPWA_v2';
+const dateKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+let state={days:{},goal:Number(localStorage.getItem('hydroGoal')||4000)};
+try{const old=JSON.parse(localStorage.getItem(KEY)||'null');if(old)state={...state,...old};}catch(e){}
+let currentKey=dateKey(new Date()),amount=250;
+const day=key=>state.days[key]||(state.days[key]={total:0,entries:[],summaryShown:false});
+const fmt=n=>Math.round(n).toLocaleString('en-IN');
+const persist=()=>{localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem('hydroGoal',state.goal);};
+const SYNC_URL_KEY='hydroSyncUrl', SYNC_TOKEN_KEY='hydroSyncToken';
+function syncSettings(){ $('syncUrl').value=localStorage.getItem(SYNC_URL_KEY)||''; $('syncToken').value=localStorage.getItem(SYNC_TOKEN_KEY)||''; }
+function syncToGoogle(showToast=false){
+ const endpoint=localStorage.getItem(SYNC_URL_KEY), token=localStorage.getItem(SYNC_TOKEN_KEY);
+ if(!endpoint||!token){ if(showToast)toast('Add your sync URL and token.'); return; }
+ const d=day(currentKey);
+ const payload={token,date:currentKey,totalMl:d.total,goalMl:state.goal,entryCount:d.entries.length,updatedAt:new Date().toISOString()};
+ fetch(endpoint,{method:'POST',mode:'no-cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+  .then(()=>{ $('syncStatus').textContent='Sync sent. Check your Google Sheet in a few seconds.'; if(showToast)toast('Synced.'); })
+  .catch(()=>{ $('syncStatus').textContent='Sync failed. Check your connection and URL.'; if(showToast)toast('Sync failed.'); });
+}
+const toast=msg=>{const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t.timer);t.timer=setTimeout(()=>t.classList.remove('show'),2100);};
+function haptic(){if(navigator.vibrate)navigator.vibrate(12);const r=$('ring');r.classList.remove('pulse');void r.offsetWidth;r.classList.add('pulse');}
+function setAmount(n){amount=n;$('slider').value=n;$('sliderValue').textContent=n;document.querySelectorAll('#chips button').forEach(b=>b.classList.toggle('on',Number(b.dataset.amount)===n));}
+function weekKeys(){const out=[];const now=new Date();for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);out.push(d);}return out;}
+function renderWeek(){
+ const dates=weekKeys(),vals=dates.map(d=>state.days[dateKey(d)]?.total||0);
+ $('week').innerHTML=dates.map((d,i)=>`<div class="day ${vals[i]>=state.goal?'done':''}"><small>${d.toLocaleDateString(undefined,{weekday:'narrow'})}</small><b>${vals[i]?Math.round(vals[i]/100)/10+'L':'–'}</b><div class="dot"></div></div>`).join('');
+ let streak=0;for(let i=0;i<365;i++){const d=new Date();d.setDate(d.getDate()-i);if((state.days[dateKey(d)]?.total||0)>=state.goal)streak++;else break;}
+ $('streak').textContent=streak;$('weeklyAvg').textContent=fmt(Math.round(vals.reduce((a,b)=>a+b,0)/7));$('goalDays').textContent=vals.filter(v=>v>=state.goal).length+'/7';
+}
+let shown=0,raf;
+function countTo(n){cancelAnimationFrame(raf);const from=shown,t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/800),e=1-Math.pow(1-k,3);shown=from+(n-from)*e;$('total').textContent=fmt(shown);if(k<1)raf=requestAnimationFrame(step);};raf=requestAnimationFrame(step);}
+const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function burst(n){if(calm)return;const o=$('ring');const mk=(c,css)=>{const e=document.createElement('i');e.className=c;if(css)e.style.cssText=css;o.appendChild(e);setTimeout(()=>e.remove(),2200);};
+ mk('drop');setTimeout(()=>{mk('rip');for(let i=0;i<Math.min(9,3+Math.round(n/100));i++){const s=6+Math.random()*12;mk('bub',`width:${s}px;height:${s}px;left:${15+Math.random()*70}%;--y:-${80+Math.random()*180}px;--x:${(Math.random()-.5)*50}px;--t:${1+Math.random()}s`);}},420);}
+const clamp=v=>Math.max(-1,Math.min(1,v)),tilt=(x,y)=>{const st=$('ring').style;st.setProperty('--tx',x);st.setProperty('--ty',y);};
+document.addEventListener('pointermove',e=>{tilt(clamp((e.clientX/innerWidth-.5)*2),clamp((e.clientY/innerHeight-.5)*2));const g=e.target.closest&&e.target.closest('.glass');if(g){const r=g.getBoundingClientRect();g.style.setProperty('--mx',(e.clientX-r.left)+'px');g.style.setProperty('--my',(e.clientY-r.top)+'px');}});
+window.addEventListener('deviceorientation',e=>{if(e.gamma==null)return;tilt(clamp(e.gamma/30),clamp((e.beta-45)/30));});
+function render(){
+ const d=day(currentKey),goal=state.goal,pct=Math.min(100,Math.round(d.total/goal*100)),left=Math.max(0,goal-d.total);
+ countTo(d.total);$('ring').classList.toggle('full',pct>=100);$('percent').textContent=pct+'%';$('remaining').textContent=left?fmt(left)+' ml to go':'Goal reached. Great work!';
+ $('goalPill').textContent='Daily goal '+fmt(goal)+' ml';$('waveFill').style.height=pct+'%';
+ $('entriesCount').textContent=d.entries.length+' '+(d.entries.length===1?'entry':'entries');
+ $('logList').innerHTML=d.entries.length?d.entries.slice().reverse().map(e=>`<div class="log-row"><i></i><span>${e.time}</span><strong>+${fmt(e.amount)} ml</strong></div>`).join(''):'<div class="empty">Nothing logged yet.</div>';
+ $('goalInput').value=goal;renderWeek();
+}
+function add(n){const d=day(currentKey),now=new Date();d.entries.push({amount:n,time:now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});d.total+=n;persist();render();burst(n);syncToGoogle(false);haptic();toast('+'+fmt(n)+' ml');}
+function undo(){const d=day(currentKey);if(!d.entries.length){toast('Nothing to undo.');return;}const e=d.entries.pop();d.total=Math.max(0,d.total-e.amount);persist();render();syncToGoogle(false);haptic();toast('Entry removed.');}
+function summaryText(){const d=day(currentKey);return `Hydro Habit · ${currentKey}\nWater: ${fmt(d.total)} ml / ${fmt(state.goal)} ml\nGoal progress: ${Math.round(d.total/state.goal*100)}%`;}
+function showSummary(force=false){const d=day(currentKey);if(d.summaryShown&&!force)return;const box=$('dailyReport');box.innerHTML=`<b>Daily check-in</b><br>${fmt(d.total)} of ${fmt(state.goal)} ml (${Math.round(d.total/state.goal*100)}%).<br>${d.total>=state.goal?'Goal reached today. Nice work!':fmt(Math.max(0,state.goal-d.total))+' ml below target. Tomorrow is a new day.'}<br><button id="share">Share summary</button>`;box.classList.add('show');$('share').onclick=share;d.summaryShown=true;persist();}
+function share(){const text=summaryText();if(navigator.share)navigator.share({title:'My hydration summary',text}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>toast('Summary copied.'));else toast(text);}
+function dateRefresh(){const k=dateKey(new Date());if(k!==currentKey){currentKey=k;$('dailyReport').classList.remove('show');render();toast('New day, fresh start.');}}
+function sheet(open){$('sheet').classList.toggle('show',open);$('scrim').classList.toggle('show',open);$('sheet').setAttribute('aria-hidden',!open);}
+$('openSettings').onclick=()=>sheet(true);$('scrim').onclick=()=>sheet(false);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')sheet(false);});
+$('slider').addEventListener('input',e=>setAmount(Number(e.target.value)));
+$('slider').addEventListener('change',haptic);
+document.querySelectorAll('#chips button').forEach(b=>b.addEventListener('click',()=>{setAmount(Number(b.dataset.amount));haptic();}));
+$('add').onclick=()=>add(amount);$('undo').onclick=undo;
+$('goalInput').onchange=e=>{state.goal=Math.min(10000,Math.max(500,Number(e.target.value)||4000));persist();render();syncToGoogle(false);toast('Target updated.');};
+$('saveSync').onclick=()=>{
+ const url=$('syncUrl').value.trim(),token=$('syncToken').value.trim();
+ if(url && !url.startsWith('https://script.google.com/')){toast('Use your Apps Script web app URL.');return;}
+ if(!url||!token){toast('Enter both URL and token.');return;}
+ localStorage.setItem(SYNC_URL_KEY,url);localStorage.setItem(SYNC_TOKEN_KEY,token);
+ $('syncStatus').textContent='Saved. Sending today’s total…';
+ syncToGoogle(true);
+};
+$('notify').onclick=async()=>{if(!('Notification'in window)){toast('Notifications not supported here.');return;}const p=await Notification.requestPermission();$('notify').textContent=p==='granted'?'Enabled':'Enable';toast(p==='granted'?'Notifications enabled.':'Permission not granted.');};
+syncSettings();setAmount(250);$('today').textContent=new Date().toLocaleDateString(undefined,{day:'numeric',month:'short'});$('weekday').textContent=new Date().toLocaleDateString(undefined,{weekday:'long'});
+render();syncToGoogle(false);setInterval(dateRefresh,30000);
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+})();
+</script>
+</body></html>
